@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useContext } from 'react';
+import React, { useRef, useEffect, useContext, useState } from 'react';
 import { Stage, Layer } from 'react-konva';
 import {
   ButtonGroup,
@@ -55,6 +55,8 @@ const GraphVisualization = () => {
     setIsDraggable
   } = useContext(GraphContext);
 
+  const [settingsSave,setSettingsSave]=useState(false);
+
   const nextIdVertexes = useRef(Math.max(...vertexes.map(vertex => vertex.id)) + 1);
   const nextIdArrows = useRef(arrows.length);
   const nextIdLines = useRef(lines.length);
@@ -88,7 +90,7 @@ const GraphVisualization = () => {
     handleDeleteComponent(componentId, type, activeButton, vertexes, setVertexes, setLines, lines, setArrows, arrows)
   };
 
-  //Screen size
+  //Canvas size
   const algorithmInfoOffset = () => {
     let offsetX = 0;
     if (activeButton === "book") {
@@ -134,6 +136,7 @@ const GraphVisualization = () => {
 
     const width = Math.max(newWidth, stageSize.width);
     const height = Math.max(newHeight, stageSize.height);
+    setSettingsSave(false);
 
     return { width, height };
   };
@@ -141,7 +144,7 @@ const GraphVisualization = () => {
   useEffect(() => {
     const newSize = calculateStageSize();
     setStageSize(newSize);
-  }, [vertexes, activeButton]);
+  }, [vertexes, activeButton,settingsSave]);
 
   return (
     <>
@@ -154,7 +157,7 @@ const GraphVisualization = () => {
         visible={colorPickerVisible}
         onHide={() => setColorPickerVisible(false)}
       />
-      <SettingsComponent />
+      <SettingsComponent calculateStageSize={calculateStageSize} setSettingsSave={setSettingsSave}/>
       <AlgorithmDialog />
       <WeightDialog />
       <VertexNameDialog />
@@ -172,7 +175,8 @@ const GraphVisualization = () => {
                 handleDeleteComponent={deleteComponent}
               />
             ))}
-          </Layer><Layer>
+          </Layer>
+          <Layer>
             {arrows.map((arrow) => (
               <ArrowComponent
                 key={arrow.id}

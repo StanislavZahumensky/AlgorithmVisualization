@@ -4,7 +4,7 @@ import { Button } from 'primereact/button';
 import { InputNumber } from 'primereact/inputnumber';
 import { GraphContext } from '../../GraphProvider';
 
-const SettingsComponent = () => {
+const SettingsComponent = ({ calculateStageSize,setSettingsSave }) => {
   const {
     setSettingsVisible,
     setVertexSize,
@@ -18,10 +18,21 @@ const SettingsComponent = () => {
   const [newVertexSize, setNewVertexSize] = useState(vertexSize);
 
   const handleSave = () => {
+    const calculatedSize = calculateStageSize();
+  
+    const newWidth = calculatedSize.width;
+    const newHeight = calculatedSize.height;
+  
+    const updatedWidth = newWidth > stageSize.width ? newWidth : newSize.width;
+    const updatedHeight = newHeight > stageSize.height ? newHeight : newSize.height;
+  
+    setNewSize({ width: updatedWidth, height: updatedHeight });
+    setSettingsSave(true);
     setVertexSize(newVertexSize);
-    setStageSize({ width: newSize.width, height: newSize.height });
+    setStageSize({ width: updatedWidth, height: updatedHeight });
     setSettingsVisible(false);
   };
+  
 
   return (
     <Dialog visible={settingsVisible} onHide={() => setSettingsVisible(false)} header="Nastavenia">
